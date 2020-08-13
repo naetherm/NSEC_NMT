@@ -1,0 +1,29 @@
+---
+version: 1
+
+kind: experiment
+
+framework: pytorch
+
+environment:
+  resources:
+    gpu:
+      requests: 1
+      limits: 1
+
+build:
+  image: pytorch/pytorch:1.2-cuda10.0-cudnn7-devel
+  build_steps:
+    - pip install --ignore-installed PyYAML ftfy
+    - pip install --no-cache-dir -U polyaxon-client spacy overrides jsonpickle regex nltk tensorboardX
+run:
+  cmd: python3 setup.py build_ext --inplace && \
+       python3 train.py /data/1/naetherm/nsec/nsec_large \
+          --skip-invalid-size-inputs-valid-test \
+          --lr 0.025 \
+          --clip-norm 0.1 \
+          --dropout 0.2 \
+          --max-epoch 35 \
+          --max-sentences 16 \
+          --arch fconv_mc_iwslt_de_en \
+          --save-dir /output/
